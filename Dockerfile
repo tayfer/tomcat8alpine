@@ -11,6 +11,8 @@ ENV TOMCAT_MAJOR=8 \
     CATALINA_HOME=/opt/tomcat \
     CATALINA_OUT=/dev/null
 
+ENV PATH $PATH:$CATALINA_HOME/bin
+
 RUN mkdir -p "${TOMCAT_HOME}"
 
 #RUN apk add bash-completion
@@ -24,10 +26,14 @@ RUN apk upgrade --update && \
     apk del curl && \
     rm -rf /tmp/* /var/cache/apk/*
 
+#webapps Root
+RUN mkdir -p ${TOMCAT_HOME}/webapps/ROOT
+
+#upgrade server.xml
 COPY server.xml ${TOMCAT_HOME}/conf/server.xml
 
 RUN chmod +x ${TOMCAT_HOME}/bin/*.sh
 
-EXPOSE 8080
 # Launch Tomcat on startup
-CMD ${CATALINA_HOME}/bin/catalina.sh run
+EXPOSE 8080
+CMD ["catalina.sh", "run"]
